@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="./../resources/templates/simple.xhtml">
+	<ui:define name="content">
+
+		<h:form id="mainForm">
+
+			<h1>BITACORA</h1>
+
+			<p:dataTable var="row" value="#{bitacoraForm.listBitacora}"
+				paginator="true" rows="50"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="50,100,150">
+
+				<p:column sortBy="#{row.fecha}" filterBy="#{row.fecha}"
+					headerText="FECHA">
+					<h:outputText value="#{row.fecha}" />
+				</p:column>
+
+				<p:column headerText="ACCIONES" sortBy="#{row.accion}"
+					filterBy="#{row.accion}" filterMatchMode="contains">
+					<h:outputText value="#{row.accion}" />
+				</p:column>
+
+				<p:column headerText="FORMULARIO" sortBy="#{row.formulario}"
+					filterBy="#{row.formulario}">
+					<h:outputText value="#{row.formulario}" />
+				</p:column>
+
+				<p:column headerText="USUARIO" sortBy="#{row.usuario}"
+					filterBy="#{row.usuario}">
+					<h:outputText value="#{row.usuario}" />
+				</p:column>
+
+				<p:column headerText="DIRECCION IP" sortBy="#{row.direccionIp}"
+					filterBy="#{row.direccionIp}">
+					<h:outputText value="#{row.direccionIp}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

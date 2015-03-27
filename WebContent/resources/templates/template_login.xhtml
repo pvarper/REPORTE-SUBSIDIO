@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+<h:head>
+	<f:facet name="first">
+		<meta http-equiv="x-ua-compatible" content="IE=8" />
+	</f:facet>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta content="private ,no-cache, no-store, must-revalidate"
+		http-equiv="Cache-Control" />
+	<meta content="no-cache" http-equiv="Pragma" />
+	<meta content="0" http-equiv="Expires" />
+	<link href="#{request.contextPath}/resources/css/styleLoginTV.css"
+		rel="styleSheet" type="text/css" />
+	<link href="#{request.contextPath}/resources/css/login-box.css"
+		rel="styleSheet" type="text/css" />
+
+	<link rel="shortcut icon"
+		href="#{request.contextPath}/resources/icons/icon.png"
+		type="image/png" />
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/js/aplication.js"></script>
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/js/base64.js"></script>
+
+	<f:loadBundle basename="config_web_es" var="properties" />
+
+	<title>#{properties.TITULO_APLICACION}</title>
+
+</h:head>
+
+<body>
+
+	<p:outputPanel ajaxRendered="true">
+		<p:growl id="messages" escape="false" showSummary="false"
+			showDetail="true" autoUpdate="true" sticky="true" />
+	</p:outputPanel>
+
+	<ui:insert name="content">Content</ui:insert>
+
+</body>
+
+</html>
+

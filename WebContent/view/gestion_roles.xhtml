@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="./../resources/templates/simple.xhtml">
+
+	<ui:define name="content">
+
+		<p:dialog id="dlgNuevoEditarId" widgetVar="dlgNuevoEditar"
+			width="350px" closeOnEscape="false" header="Nuevo/editar Rol"
+			modal="true" resizable="false" appendTo="@(body)"
+			visible="#{roleForm.visibleNuevoEditar}" closable="false">
+			<h:form id="frmDatos">
+
+				<p:messages showDetail="true" showSummary="false" autoUpdate="true"
+					closable="true" />
+				<h:panelGrid columns="2">
+
+					<p:outputLabel rendered="#{roleForm.edit}" value="Id rol:" />
+					<p:inputText rendered="#{roleForm.edit}" readonly="true"
+						value="#{roleForm.role.rolId}" />
+
+					<p:outputLabel value="Nombre:" />
+					<p:inputText value="#{roleForm.role.nombre}" label="Nombre"
+						maxlength="100" size="25" />
+
+					<p:outputLabel value="Descripción:" />
+					<p:inputText value="#{roleForm.role.descripcion}" maxlength="100"
+						size="35" label="Descripción" />
+
+
+					<p:commandButton value="Guardar" icon="ui-icon-disk"
+						actionListener="#{roleForm.guardarRol()}"
+						update=":dlgNuevoEditarId :frmDatos :mainForm2" />
+
+					<p:commandButton value="Salir" icon="ui-icon-close"
+						actionListener="#{roleForm.setVisibleNuevoEditar(false)}"
+						update=":dlgNuevoEditarId " />
+
+				</h:panelGrid>
+
+
+			</h:form>
+		</p:dialog>
+
+		<h:form id="mainForm2">
+			<h1>GESTIÓN DE ROLES</h1>
+			<br></br>
+			<p:commandButton value="Nuevo" icon="ui-icon-document"
+				rendered="#{roleForm.isAuthorized(privilegio.ACCION_CREAR)}"
+				style="width:140px;" actionListener="#{roleForm.newRole()}"
+				update=":dlgNuevoEditarId :frmDatos" />
+
+			<p:commandButton value="Editar" icon="ui-icon-pencil"
+				rendered="#{roleForm.isAuthorized(privilegio.ACCION_MODIFICAR)}"
+				style="width:140px;" actionListener="#{roleForm.editRole()}"
+				update=":dlgNuevoEditarId :frmDatos" />
+
+			<br></br>
+			<p:dataTable var="item" value="#{roleForm.listRole}" paginator="true"
+				first="0" rows="10"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" selectionMode="single"
+				selection="#{roleForm.role}" rowKey="#{item.rolId}">
+
+				<f:facet name="header">LISTA DE ROL</f:facet>
+
+				<p:column headerText="ACCIONES" style="text-align: center;"
+					width="50">
+
+					<p:commandLink id="editLink" title="Editar Rol"
+						actionListener="#{roleForm.editRole(item)}"
+						rendered="#{(item.rolId != 1) and (roleForm.isAuthorized(privilegio.ACCION_MODIFICAR))}"
+						update=":dlgNuevoEditarId :frmDatos">
+						<h:graphicImage alt="Editar" url="/resources/icons/edit.png" />
+					</p:commandLink>
+
+					<p:commandButton id="deleteLink" value="" title="Elimar Rol"
+						rendered="#{(item.rolId != 1) and (roleForm.isAuthorized(privilegio.ACCION_ELIMINAR))}"
+						style="height:20px; width:22px; border:0px none; background:transparent  url('../resources/icons/delete.png;');"
+						actionListener="#{roleForm.slectRole}"
+						oncomplete="PF('dlg').show();" update=":formPanel">
+						<f:param name="roleId" value="#{item.rolId}" />
+						<f:param name="roleName" value="#{item.nombre}" />
+					</p:commandButton>
+
+				</p:column>
+
+				<p:column headerText="PERMISOS" style="text-align: center;"
+					width="50">
+
+					<h:commandLink action="#{roleForm.cargarRoles(item.rolId)}"
+						title="Configurar Permisos"
+						rendered="#{(item.rolId != 1) and (roleForm.isAuthorized(privilegio.ACCION_CONFIGURAR))}">
+						<h:graphicImage alt="Editar Permisos"
+							url="/resources/icons/top.PNG" styleClass="icon" />
+					</h:commandLink>
+
+				</p:column>
+
+				<p:column headerText="ID" width="30">
+					<h:outputText value="#{item.rolId}" />
+				</p:column>
+
+				<p:column sortBy="#{item.nombre}" filterBy="#{item.nombre}"
+					filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="NOMBRE" />
+					</f:facet>
+					<h:outputText value="#{item.nombre}" />
+				</p:column>
+
+				<p:column sortBy="#{item.descripcion}"
+					filterBy="#{item.descripcion}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="DESCRIPCIÓN" />
+					</f:facet>
+					<h:outputText value="#{item.descripcion}" />
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+
+
+		<p:dialog id="dlgPermisos" header="Permisos por Rol" widgetVar="dlg1"
+			minHeight="250" visible="#{roleForm.visibleDialog}" height="400"
+			width="400" closeOnEscape="true">
+
+			<h:form id="formDialog">
+
+				<p:commandButton value="Guardar"
+					actionListener="#{roleForm.guardarPermisos()}" ajax="false"
+					process="@this" update=":dlgPermisos" />
+
+				<p:tree value="#{roleForm.roles}" var="doc" selectionMode="checkbox"
+					selection="#{roleForm.nodosSeleccionados}">
+					<p:treeNode type="#{roleForm.MENU_TYPE}" icon="ui-icon-calculator">
+						<h:outputText value="#{doc}" />
+					</p:treeNode>
+					<p:treeNode type="#{roleForm.FORM_TYPE}" icon="ui-icon-newwin">
+						<h:outputText value="#{doc}" />
+					</p:treeNode>
+					<p:treeNode type="#{roleForm.ACTION_TYPE}" icon="ui-icon-gear">
+						<h:outputText value="#{doc}" />
+					</p:treeNode>
+					<p:ajax event="select" />
+				</p:tree>
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog widgetVar="dlg" modal="true" resizable="false"
+			showEffect="fade" appendTo="@(body)" header="Eliminar Role">
+			<h:form id="formPanel">
+				<p:growl id="growl" showDetail="true" sticky="true"
+					autoUpdate="true" />
+				<h:outputLabel
+					value="La Eliminacion del Rol #{roleForm.selectNameRol}, implica que se Eliminaran los demas objetos relacionados con el. Decea Continuar..?"
+					rendered="#{roleForm.casdadeDelete}" />
+				<h:outputLabel
+					value="Esta Seguro de Eliminar el rol #{roleForm.selectNameRol}..?"
+					rendered="#{!roleForm.casdadeDelete}" />
+				<p:spacer height="10" />
+				<center>
+					<h:panelGrid columns="2" cellpadding="2" cellspacing="2">
+						<p:commandButton value="Continuar"
+							actionListener="#{roleForm.deleteRole()}" icon="ui-icon-trash"
+							oncomplete="PF('dlg').hide();" update=":mainForm2"></p:commandButton>
+						<p:commandButton value="Cancelar" icon="ui-icon-cancel"
+							oncomplete="PF('dlg').hide();" update=":frmDatos"></p:commandButton>
+					</h:panelGrid>
+				</center>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+</ui:composition>
